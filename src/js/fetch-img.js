@@ -13,8 +13,6 @@ export default async function fetchImages(inputValue, page) {
       page: page,
     },
   };
-  return await axios
-    .get(baseUrl, options)
-    .then(response => response.data)
-    .catch(error => console.log(error));
+  const response = await axios.get(baseUrl, options);
+  return response.data;
 }
