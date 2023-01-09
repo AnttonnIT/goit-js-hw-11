@@ -12,7 +12,7 @@ export default function renderCards(data) {
       }) => {
         return `<div class="photo-card">
         <a href=${largeImageURL}>
-  <img src=${webformatURL} alt='${tags}' loading="lazy" width="500" height="330"/>
+  <img src=${webformatURL} alt='${tags}' loading="lazy" width="400" height="250"/>
   </a>
   <div class="info">
     <p class="info-item">
