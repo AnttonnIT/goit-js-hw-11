@@ -47,12 +47,6 @@ async function onSubmit(e) {
 }
 
 async function onClickLoadMoreBtn() {
-  if (currentHits >= totalHits) {
-    loadMoreBtnEl.classList.add('is-hidden');
-    endTextEL.classList.remove('is-hidden');
-
-    return;
-  }
   page += 1;
 
   try {
@@ -71,21 +65,32 @@ async function onClickLoadMoreBtn() {
 }
 
 async function fetchAndRenderHTML() {
-  const response = await fetchImages(inputValue, page);
-  const render = await renderCards(response);
-  const responseHits = response.hits.length;
-  totalHits = response.totalHits;
-  currentHits += responseHits;
-  if (responseHits === 0) {
-    Notiflix.Notify.failure(
-      'Sorry, there are no images matching your search query. Please try again.'
-    );
-    return;
-  }
+  try {
+    const response = await fetchImages(inputValue, page);
+    const render = renderCards(response);
+    const responseHits = response.hits.length;
+    currentHits += responseHits;
+    totalHits = response.totalHits;
 
-  loadMoreBtnEl.classList.remove('is-hidden');
-  galleryEl.insertAdjacentHTML('beforeend', render);
-  lightbox.refresh();
+    if (responseHits === 0) {
+      Notiflix.Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      return;
+    }
+
+    if (page >= Math.ceil(totalHits / 40)) {
+      loadMoreBtnEl.classList.add('is-hidden');
+      endTextEL.classList.remove('is-hidden');
+    } else {
+      loadMoreBtnEl.classList.remove('is-hidden');
+    }
+
+    galleryEl.insertAdjacentHTML('beforeend', render);
+    lightbox.refresh();
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // infinity scroll
@@ -95,6 +100,7 @@ async function fetchAndRenderHTML() {
 //   const heightForFetch = 350;
 //   const documentRect = galleryEl.getBoundingClientRect();
 //   const clientWindowHeight = document.documentElement.clientHeight;
+
 //   if (documentRect.bottom < clientWindowHeight + heightForFetch) {
 //     if (currentHits >= totalHits) {
 //       endTextEL.classList.remove('is-hidden');
